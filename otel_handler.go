@@ -69,7 +69,7 @@ func (o OtelHandler) Handle(ctx context.Context, record slog.Record) error {
 	var attributes []attribute.KeyValue
 
 	record.Attrs(func(attr slog.Attr) bool {
-		attributes = append(attributes, otelAttribute(attr))
+		attributes = append(attributes, otelAttribute(attr)...)
 		return true
 	})
 
