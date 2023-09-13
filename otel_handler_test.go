@@ -1,14 +1,16 @@
-package main
+package otelslog
 
 import (
+	"bytes"
 	"context"
-	"github.com/agoda-com/opentelemetry-logs-go/exporters/otlp/otlplogs"
+	"github.com/agoda-com/opentelemetry-logs-go/exporters/stdout/stdoutlogs"
+	"log/slog"
+
 	sdk "github.com/agoda-com/opentelemetry-logs-go/sdk/logs"
-	"github.com/agoda-com/otelslog"
 	"go.opentelemetry.io/otel/sdk/resource"
 	semconv "go.opentelemetry.io/otel/semconv/v1.21.0"
-	"log/slog"
 	"os"
+	"testing"
 )
 
 // configure common attributes for all logs
@@ -22,25 +24,31 @@ func newResource() *resource.Resource {
 	)
 }
 
-func main() {
+func doSomething(ctx context.Context) {
+	slog.InfoContext(ctx, "hello slog", slog.String("myKey", "myValue"))
+}
 
+func TestNewOtelHandler(t *testing.T) {
 	ctx := context.Background()
 
+	var buf bytes.Buffer
+
 	// configure opentelemetry logger provider
-	logExporter, _ := otlplogs.NewExporter(ctx)
+	logExporter, _ := stdoutlogs.NewExporter(stdoutlogs.WithWriter(&buf))
 	loggerProvider := sdk.NewLoggerProvider(
 		sdk.WithBatcher(logExporter),
 		sdk.WithResource(newResource()),
 	)
-	// gracefully shutdown logger to flush accumulated signals before program finish
-	defer loggerProvider.Shutdown(ctx)
 
-	otelLogger := slog.New(otelslog.NewOtelHandler(loggerProvider, &otelslog.HandlerOptions{}))
+	otelLogger := slog.New(NewOtelHandler(loggerProvider, &HandlerOptions{}))
 	slog.SetDefault(otelLogger)
 
 	doSomething(ctx)
-}
 
-func doSomething(ctx context.Context) {
-	slog.InfoContext(ctx, "hello", slog.String("myKey", "myValue"))
+	loggerProvider.Shutdown(ctx)
+
+	_ = buf.String()
+
+	// TODO: require opentelemetry-logs-go updated with fixed writer
+	//assert.Equal(t, "{host.name=CLX4NV72V6, service.name=otelslog-example, service.version=1.0.0, myKey=myValue}", actual)
 }

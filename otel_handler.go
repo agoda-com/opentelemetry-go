@@ -23,7 +23,9 @@ import (
 	"go.opentelemetry.io/otel/sdk/instrumentation"
 	semconv "go.opentelemetry.io/otel/semconv/v1.21.0"
 	"go.opentelemetry.io/otel/trace"
+	"io"
 	"log/slog"
+	"sync"
 )
 
 const (
@@ -37,7 +39,13 @@ type OtelHandler struct {
 
 type otelHandler struct {
 	logger otel.Logger
+	opts   HandlerOptions
+	mu     *sync.Mutex
+	w      io.Writer
 }
+
+// compilation time verification handler implement interface
+var _ slog.Handler = &otelHandler{}
 
 var instrumentationScope = instrumentation.Scope{
 	Name:      instrumentationName,
@@ -94,16 +102,13 @@ func (o otelHandler) Handle(ctx context.Context, record slog.Record) error {
 
 func (o otelHandler) WithAttrs(attrs []slog.Attr) slog.Handler {
 	//TODO implement me
-	panic("implement me")
+	panic("not implemented yet")
 }
 
 func (o otelHandler) WithGroup(name string) slog.Handler {
 	//TODO implement me
-	panic("implement me")
+	panic("not implemented yet")
 }
-
-// compilation time verification
-var _ slog.Handler = &otelHandler{}
 
 // HandlerOptions are options for a OtelHandler.
 // A zero HandlerOptions consists entirely of default values.
