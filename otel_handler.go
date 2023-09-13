@@ -32,10 +32,10 @@ const (
 
 // OtelHandler is a Handler that writes Records to OTLP
 type OtelHandler struct {
-	otlpHandler
+	otelHandler
 }
 
-type otlpHandler struct {
+type otelHandler struct {
 	logger otel.Logger
 }
 
@@ -45,11 +45,11 @@ var instrumentationScope = instrumentation.Scope{
 	SchemaURL: semconv.SchemaURL,
 }
 
-func (o OtelHandler) Enabled(ctx context.Context, level slog.Level) bool {
+func (o otelHandler) Enabled(ctx context.Context, level slog.Level) bool {
 	return true
 }
 
-func (o OtelHandler) Handle(ctx context.Context, record slog.Record) error {
+func (o otelHandler) Handle(ctx context.Context, record slog.Record) error {
 
 	spanContext := trace.SpanFromContext(ctx).SpanContext()
 	var traceID *trace.TraceID = nil
@@ -64,7 +64,7 @@ func (o OtelHandler) Handle(ctx context.Context, record slog.Record) error {
 		traceFlags = &tf
 	}
 	levelString := record.Level.String()
-	var severity otel.SeverityNumber = otel.SeverityNumber(int(record.Level.Level()) + 9)
+	severity := otel.SeverityNumber(int(record.Level.Level()) + 9)
 
 	var attributes []attribute.KeyValue
 
@@ -92,19 +92,20 @@ func (o OtelHandler) Handle(ctx context.Context, record slog.Record) error {
 	return nil
 }
 
-func (o OtelHandler) WithAttrs(attrs []slog.Attr) slog.Handler {
+func (o otelHandler) WithAttrs(attrs []slog.Attr) slog.Handler {
 	//TODO implement me
 	panic("implement me")
 }
 
-func (o OtelHandler) WithGroup(name string) slog.Handler {
+func (o otelHandler) WithGroup(name string) slog.Handler {
 	//TODO implement me
 	panic("implement me")
 }
 
-var _ slog.Handler = &OtelHandler{}
+// compilation time verification
+var _ slog.Handler = &otelHandler{}
 
-// HandlerOptions are options for a TextHandler or JSONHandler.
+// HandlerOptions are options for a OtelHandler.
 // A zero HandlerOptions consists entirely of default values.
 type HandlerOptions struct {
 }
@@ -118,7 +119,7 @@ func NewOtelHandler(loggerProvider otel.LoggerProvider, opts *HandlerOptions) *O
 		otel.WithInstrumentationVersion(instrumentationScope.Version),
 	)
 	return &OtelHandler{
-		otlpHandler{
+		otelHandler{
 			logger: logger,
 		},
 	}
