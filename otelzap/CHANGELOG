@@ -1,0 +1,35 @@
+# Changelog
+
+All notable changes to this project will be documented in this file.
+
+The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
+
+This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+
+## [Unreleased]
+
+## [v0.1.1]
+
+### Changed
+
+- opentelemetry-go updated to 1.17.0
+- opentelemetry-logs-go updated to 0.2.0
+- zap updated to 1.25.0
+
+## [v0.1.0] 2023-08-06
+
+### Fixed
+
+- using pointer to struct instead of raw struct
+
+### Changed
+
+- github.com/agoda-com/opentelemetry-logs-go updated to v0.1.2
+
+## [v0.0.1] 2023-07-25
+
+### Added
+
+- Otel Zap Core with OTLP format Log Records export
+- Ctx(ctx) method to provide context to underlying exporters
+

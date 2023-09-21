@@ -6,3 +6,4 @@ Open-telemetry extensions for go language
 | Logger               | Version |
 |----------------------|---------|
 | [otelslog](otelslog) | v0.0.1  |
+| [otelzap](otelzap)   | v0.1.1  |
