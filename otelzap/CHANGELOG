@@ -8,6 +8,12 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ## [Unreleased]
 
+### Changed
+
+- opentelemetry-go updated to 1.18.0
+- opentelemetry-logs-go updated to 0.3.0
+- zap updated to 1.26.0
+
 ## [v0.1.1]
 
 ### Changed
