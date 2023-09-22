@@ -88,7 +88,6 @@ func TestZerologHook_ValidSpan(t *testing.T) {
 		Int32("i32", 32).
 		Int64("i64", 64).
 		Dur("dur", 1).
-		Err(fmt.Errorf("new error")).
 		Uint("u", 0).
 		Uint8("u", 0).
 		Uint16("u", 0).
@@ -99,6 +98,7 @@ func TestZerologHook_ValidSpan(t *testing.T) {
 		Bool("bool", true).
 		Interface("interface", &User{}).
 		Interface("array", []interface{}{"1", 1, "2", 2, "3", 3}).
+		Err(fmt.Errorf("new error")).
 		Msg("hello zerolog")
 
 	actual := buf.String()
