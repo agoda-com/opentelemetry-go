@@ -23,6 +23,8 @@ go get -u github.com/agoda-com/opentelemetry-go/otelzerolog
 
 ## Usage
 
+Configure open-telemetry provider. See [example here](../README.md)
+
 ```go
 func main() {
   ctx := context.Background()
