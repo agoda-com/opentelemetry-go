@@ -3,6 +3,7 @@ package otelzerolog
 import (
 	"bytes"
 	"context"
+	"fmt"
 	"os"
 	"testing"
 
@@ -15,6 +16,12 @@ import (
 	oteltrace "go.opentelemetry.io/otel/sdk/trace"
 	semconv "go.opentelemetry.io/otel/semconv/v1.21.0"
 )
+
+type User struct{}
+
+func (u *User) String() string {
+	return "I am a user"
+}
 
 // configure common attributes for all logs
 func newResource() *resource.Resource {
@@ -45,12 +52,13 @@ func TestZerologHook(t *testing.T) {
 	_ = loggerProvider.Shutdown(ctx)
 
 	actual := buf.String()
-	assert.Contains(t, actual, "INFO")                                                    // ensure th log level
-	assert.Contains(t, actual, "hello zerolog")                                           // ensure the message
-	assert.Contains(t, actual, "[scopeInfo: otelzerolog:0.0.1]")                          // ensure the scope info
-	assert.Contains(t, actual, "service.name=otelzerolog-example, service.version=1.0.0") // ensure the resource attributes
-	assert.Contains(t, actual, "level=info")                                              // ensure the severity attributes
-	assert.Contains(t, actual, "key=value")                                               // ensure the log fields
+	assert.Contains(t, actual, "INFO")                                                               // ensure th log level
+	assert.Contains(t, actual, "hello zerolog")                                                      // ensure the message
+	assert.Contains(t, actual, "scopeInfo: github.com/agoda-com/opentelemetry-go/otelzerolog:0.0.1") // ensure the scope info
+	assert.Contains(t, actual, "service.name=otelzerolog-example")                                   // ensure the resource attributes
+	assert.Contains(t, actual, "service.version=1.0.0")                                              // ensure the resource attributes
+	assert.Contains(t, actual, "level=info")                                                         // ensure the severity attributes
+	assert.Contains(t, actual, "key=value")                                                          // ensure the log fields
 }
 
 func TestZerologHook_ValidSpan(t *testing.T) {
@@ -71,7 +79,27 @@ func TestZerologHook_ValidSpan(t *testing.T) {
 
 	hook := NewHook(loggerProvider)
 	log := log.Hook(hook)
-	log.Warn().Ctx(ctx).Str("key", "value").Msg("hello zerolog")
+	log.Warn().Ctx(ctx).
+		Str("key", "value").
+		Strs("strs", []string{"1", "2", "3"}).
+		Stringer("stringer", &User{}).
+		Int("int", 0).
+		Int16("i16", 16).
+		Int32("i32", 32).
+		Int64("i64", 64).
+		Dur("dur", 1).
+		Err(fmt.Errorf("new error")).
+		Uint("u", 0).
+		Uint8("u", 0).
+		Uint16("u", 0).
+		Uint32("u", 0).
+		Uint64("u", 0).
+		Float32("float32", 32.32).
+		Float64("float64", 64.64).
+		Bool("bool", true).
+		Interface("interface", &User{}).
+		Interface("array", []interface{}{"1", 1, "2", 2, "3", 3}).
+		Msg("hello zerolog")
 
 	actual := buf.String()
 	assert.Contains(t, actual, span.SpanContext().SpanID().String())  // ensure the spanID is logged

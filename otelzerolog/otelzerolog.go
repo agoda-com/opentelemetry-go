@@ -31,7 +31,7 @@ import (
 )
 
 const (
-	instrumentationName = "otelzerolog"
+	instrumentationName = "github.com/agoda-com/opentelemetry-go/otelzerolog"
 )
 
 var instrumentationScope = instrumentation.Scope{
@@ -83,7 +83,7 @@ func (h Hook) Run(e *zerolog.Event, level zerolog.Level, msg string) {
 	// TODO: this is very hacky, but it works for now
 	var attributes []attribute.KeyValue
 	for k, v := range logData {
-		attributes = append(attributes, []attribute.KeyValue{attribute.String(k, fmt.Sprintf("%v", v))}...)
+		attributes = append(attributes, otelAttribute(k, v)...)
 	}
 
 	lrc := otel.LogRecordConfig{
