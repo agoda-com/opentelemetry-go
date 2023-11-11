@@ -37,11 +37,19 @@ type OtelHandler struct {
 	otelHandler
 }
 
+// HandlerOptions are options for a OtelHandler.
+// A zero HandlerOptions consists entirely of default values.
+type HandlerOptions struct {
+	level slog.Leveler
+}
+
 type otelHandler struct {
-	logger otel.Logger
-	opts   HandlerOptions
-	mu     *sync.Mutex
-	w      io.Writer
+	logger      otel.Logger
+	opts        HandlerOptions
+	groupPrefix string
+	attrs       []slog.Attr
+	mu          *sync.Mutex
+	w           io.Writer
 }
 
 // compilation time verification handler implement interface
@@ -54,7 +62,11 @@ var instrumentationScope = instrumentation.Scope{
 }
 
 func (o otelHandler) Enabled(ctx context.Context, level slog.Level) bool {
-	return true
+	minLevel := slog.LevelInfo
+	if o.opts.level != nil {
+		minLevel = o.opts.level.Level()
+	}
+	return level >= minLevel
 }
 
 func (o otelHandler) Handle(ctx context.Context, record slog.Record) error {
@@ -76,8 +88,12 @@ func (o otelHandler) Handle(ctx context.Context, record slog.Record) error {
 
 	var attributes []attribute.KeyValue
 
-	record.Attrs(func(attr slog.Attr) bool {
+	for _, attr := range o.attrs {
 		attributes = append(attributes, otelAttribute(attr)...)
+	}
+
+	record.Attrs(func(attr slog.Attr) bool {
+		attributes = append(attributes, otelAttribute(withGroupPrefix(o.groupPrefix, attr))...)
 		return true
 	})
 
@@ -100,19 +116,41 @@ func (o otelHandler) Handle(ctx context.Context, record slog.Record) error {
 	return nil
 }
 
+func withGroupPrefix(groupPrefix string, attr slog.Attr) slog.Attr {
+	if groupPrefix != "" {
+		attr.Key = groupPrefix + attr.Key
+	}
+	return attr
+}
+
 func (o otelHandler) WithAttrs(attrs []slog.Attr) slog.Handler {
-	//TODO implement me
-	panic("not implemented yet")
+	for i, attr := range attrs {
+		attrs[i] = withGroupPrefix(o.groupPrefix, attr)
+	}
+
+	return &otelHandler{
+		logger:      o.logger,
+		opts:        o.opts,
+		groupPrefix: o.groupPrefix,
+		attrs:       append(o.attrs, attrs...),
+	}
 }
 
 func (o otelHandler) WithGroup(name string) slog.Handler {
-	//TODO implement me
-	panic("not implemented yet")
-}
+	if name == "" {
+		return o
+	}
+	prefix := name + "."
+	if o.groupPrefix != "" {
+		prefix = o.groupPrefix + prefix
+	}
 
-// HandlerOptions are options for a OtelHandler.
-// A zero HandlerOptions consists entirely of default values.
-type HandlerOptions struct {
+	return &otelHandler{
+		logger:      o.logger,
+		opts:        o.opts,
+		attrs:       o.attrs,
+		groupPrefix: prefix,
+	}
 }
 
 // NewOtelHandler creates a OtelHandler that writes to otlp,
@@ -124,8 +162,9 @@ func NewOtelHandler(loggerProvider otel.LoggerProvider, opts *HandlerOptions) *O
 		otel.WithInstrumentationVersion(instrumentationScope.Version),
 	)
 	return &OtelHandler{
-		otelHandler{
+		otelHandler: otelHandler{
 			logger: logger,
+			opts:   *opts,
 		},
 	}
 }
