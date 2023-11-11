@@ -41,7 +41,15 @@ func TestNewOtelHandler(t *testing.T) {
 		sdk.WithResource(newResource()),
 	)
 
-	otelLogger := slog.New(NewOtelHandler(loggerProvider, &HandlerOptions{}))
+	handler := NewOtelHandler(loggerProvider, &HandlerOptions{
+		level: slog.LevelInfo,
+	}).
+		WithAttrs([]slog.Attr{slog.String("first", "value1")}).
+		WithGroup("group1").
+		WithAttrs([]slog.Attr{slog.String("second", "value2")}).
+		WithGroup("group2")
+
+	otelLogger := slog.New(handler)
 	slog.SetDefault(otelLogger)
 
 	doSomething(ctx)
@@ -50,5 +58,5 @@ func TestNewOtelHandler(t *testing.T) {
 
 	actual := buf.String()
 
-	assert.Contains(t, actual, "INFO hello slog [scopeInfo: github.com/agoda-com/otelslog:0.0.1] {host.name=CLX4NV72V6, service.name=otelslog-example, service.version=1.0.0, myKey=myValue}")
+	assert.Contains(t, actual, "INFO hello slog [scopeInfo: github.com/agoda-com/otelslog:0.0.1] {host.name=CLX4NV72V6, service.name=otelslog-example, service.version=1.0.0, first=value1, group1.second=value2, group1.group2.myKey=myValue}")
 }
