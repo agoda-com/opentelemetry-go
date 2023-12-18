@@ -33,7 +33,8 @@ const (
 type otlpCore struct {
 	logger otel.Logger
 
-	fields []zapcore.Field
+	fields   []zapcore.Field
+	minLevel zapcore.Level
 }
 
 var instrumentationScope = instrumentation.Scope{
@@ -42,8 +43,8 @@ var instrumentationScope = instrumentation.Scope{
 	SchemaURL: semconv.SchemaURL,
 }
 
-func (otlpCore) Enabled(zapcore.Level) bool {
-	return true
+func (c *otlpCore) Enabled(level zapcore.Level) bool {
+	return level >= c.minLevel
 }
 
 func (c *otlpCore) With(f []zapcore.Field) zapcore.Core {
