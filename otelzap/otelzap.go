@@ -29,8 +29,8 @@ func NewOtelCore(loggerProvider otel.LoggerProvider, opts ...Option) zapcore.Cor
 	)
 
 	c := &otlpCore{
-		logger:   logger,
-		minLevel: zapcore.InfoLevel,
+		logger: logger,
+		level:  zapcore.InfoLevel,
 	}
 	for _, apply := range opts {
 		apply(c)
@@ -42,9 +42,9 @@ func NewOtelCore(loggerProvider otel.LoggerProvider, opts ...Option) zapcore.Cor
 // Option is a function that applies an option to an OpenTelemetry Core
 type Option func(c *otlpCore)
 
-// WithMinLevel sets the minimum level for the OpenTelemetry Core log to be exported
-func WithMinLevel(level zapcore.Level) Option {
+// WithLevel sets the minimum level for the OpenTelemetry Core log to be exported
+func WithLevel(level zapcore.Level) Option {
 	return Option(func(c *otlpCore) {
-		c.minLevel = level
+		c.level = level
 	})
 }
