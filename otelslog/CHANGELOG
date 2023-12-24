@@ -8,6 +8,18 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ## [Unreleased]
 
+## [v0.1.1] 2023-12-24
+
+### Added
+
+- public option `Level` in HandlerOptions
+
+## [v0.1.0] 2023-11-11
+
+### Added
+
+- Implementation for WithGroup, WithAttrs, Configuration for slog.Level
+
 ## [v0.0.1] 2023-09-20
 
 ### Added

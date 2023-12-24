@@ -40,7 +40,7 @@ type OtelHandler struct {
 // HandlerOptions are options for a OtelHandler.
 // A zero HandlerOptions consists entirely of default values.
 type HandlerOptions struct {
-	level slog.Leveler
+	Level slog.Leveler
 }
 
 type otelHandler struct {
@@ -63,8 +63,8 @@ var instrumentationScope = instrumentation.Scope{
 
 func (o otelHandler) Enabled(ctx context.Context, level slog.Level) bool {
 	minLevel := slog.LevelInfo
-	if o.opts.level != nil {
-		minLevel = o.opts.level.Level()
+	if o.opts.Level != nil {
+		minLevel = o.opts.Level.Level()
 	}
 	return level >= minLevel
 }
