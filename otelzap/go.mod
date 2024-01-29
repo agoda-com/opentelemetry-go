@@ -1,4 +1,4 @@
-module github.com/agoda-com/opentelemetry-go/otelzap
+module github.com/Noma-Security/opentelemetry-go/otelzap
 
 go 1.20
 
