@@ -54,6 +54,7 @@ func (c *otlpCore) With(f []zapcore.Field) zapcore.Core {
 	return &otlpCore{
 		logger: c.logger,
 		fields: fields,
+		level:  c.level,
 	}
 }
 
