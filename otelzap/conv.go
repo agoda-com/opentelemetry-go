@@ -87,18 +87,6 @@ func otelAttribute(f zapcore.Field) []attribute.KeyValue {
 		return []attribute.KeyValue{}
 	case zapcore.SkipType:
 		return []attribute.KeyValue{}
-	case zapcore.ArrayMarshalerType:
-		switch arrayValue := f.Interface.(type) {
-		case []string:
-			return []attribute.KeyValue{attribute.StringSlice(f.Key, arrayValue)}
-		case []int:
-			return []attribute.KeyValue{attribute.IntSlice(f.Key, arrayValue)}
-		case []int64:
-			return []attribute.KeyValue{attribute.Int64Slice(f.Key, arrayValue)}
-		case []bool:
-			return []attribute.KeyValue{attribute.BoolSlice(f.Key, arrayValue)}
-		}
-		return []attribute.KeyValue{attribute.String(f.Key, "Unsupported array type")}
 	case zapcore.BinaryType:
 		return []attribute.KeyValue{attribute.String(f.Key, base64.StdEncoding.EncodeToString(f.Interface.([]byte)))}
 	case zapcore.ByteStringType:
