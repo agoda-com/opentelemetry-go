@@ -17,11 +17,16 @@ limitations under the License.
 package otelzap
 
 import (
+	"encoding/base64"
+	"fmt"
+	"math"
+	"reflect"
+	"time"
+
 	otel "github.com/agoda-com/opentelemetry-logs-go/logs"
 	"go.opentelemetry.io/otel/attribute"
 	semconv "go.opentelemetry.io/otel/semconv/v1.20.0"
 	"go.uber.org/zap/zapcore"
-	"math"
 )
 
 // otelLevel zap level to otlp level converter
@@ -81,6 +86,39 @@ func otelAttribute(f zapcore.Field) []attribute.KeyValue {
 		}
 		return []attribute.KeyValue{}
 	case zapcore.SkipType:
+		return []attribute.KeyValue{}
+	case zapcore.ArrayMarshalerType:
+		switch arrayValue := f.Interface.(type) {
+		case []string:
+			return []attribute.KeyValue{attribute.StringSlice(f.Key, arrayValue)}
+		case []int:
+			return []attribute.KeyValue{attribute.IntSlice(f.Key, arrayValue)}
+		case []int64:
+			return []attribute.KeyValue{attribute.Int64Slice(f.Key, arrayValue)}
+		case []bool:
+			return []attribute.KeyValue{attribute.BoolSlice(f.Key, arrayValue)}
+		}
+		return []attribute.KeyValue{attribute.String(f.Key, "Unsupported array type")}
+	case zapcore.BinaryType:
+		return []attribute.KeyValue{attribute.String(f.Key, base64.StdEncoding.EncodeToString(f.Interface.([]byte)))}
+	case zapcore.ByteStringType:
+		return []attribute.KeyValue{attribute.String(f.Key, string(f.Interface.([]byte)))}
+	case zapcore.DurationType:
+		return []attribute.KeyValue{attribute.Float64(f.Key, float64(f.Integer)/float64(time.Second))}
+	case zapcore.TimeType:
+		if f.Interface != nil {
+			return []attribute.KeyValue{attribute.Int64(f.Key, time.Unix(0, f.Integer).In(f.Interface.(*time.Location)).Unix())}
+		}
+		return []attribute.KeyValue{attribute.Int64(f.Key, time.Unix(0, f.Integer).Unix())} // Fall back to UTC if location is nil.
+	case zapcore.TimeFullType:
+		return []attribute.KeyValue{attribute.Int64(f.Key, f.Interface.(time.Time).Unix())}
+	case zapcore.StringerType:
+		if stinger, ok := f.Interface.(fmt.Stringer); ok {
+			return []attribute.KeyValue{attribute.Stringer(f.Key, stinger)}
+		}
+		if v := reflect.ValueOf(f.Interface); v.Kind() == reflect.Ptr && v.IsNil() {
+			return []attribute.KeyValue{attribute.String(f.Key, "<nil>")}
+		}
 		return []attribute.KeyValue{}
 	}
 	// unhandled types will be treated as string
