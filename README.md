@@ -6,8 +6,8 @@ Open-telemetry extensions for go language
 | Logger                     | Version | Minimal go version |
 |----------------------------|---------|--------------------|
 | [otelslog](otelslog)       | v0.1.0  | 1.21               |
-| [otelzap](otelzap)         | v0.2.1  | 1.20               |
-| [otelzerolog](otelzerolog) | v0.0.1  | 1.20               |
+| [otelzap](otelzap)         | v0.2.3  | 1.21               |
+| [otelzerolog](otelzerolog) | v0.0.1  | 1.21               |
 
 ### Quick start with open-telemetry loggers
 
