@@ -27,7 +27,8 @@ func newResource() *resource.Resource {
 }
 
 func doSomething(ctx context.Context) {
-	slog.InfoContext(ctx, "hello slog", slog.String("myKey", "myValue"))
+	slog.InfoContext(ctx, "hello slog", slog.String("myKey", "myValue"),
+		slog.Group("myGroup", slog.String("groupKey", "groupValue")))
 }
 
 func TestNewOtelHandler(t *testing.T) {
@@ -60,5 +61,5 @@ func TestNewOtelHandler(t *testing.T) {
 	actual := buf.String()
 
 	assert.Contains(t, actual, "INFO hello slog [scopeInfo: github.com/agoda-com/otelslog:0.0.1] {host.name=")
-	assert.Contains(t, actual, "service.name=otelslog-example, service.version=1.0.0, first=value1, group1.second=value2, group1.group2.myKey=myValue}")
+	assert.Contains(t, actual, "service.name=otelslog-example, service.version=1.0.0, first=value1, group1.second=value2, group1.group2.myKey=myValue, group1.group2.myGroup.groupKey=groupValue}")
 }
