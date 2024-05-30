@@ -39,6 +39,7 @@ func otelAttribute(attr slog.Attr) []attribute.KeyValue {
 		group := attr.Value.Group()
 		var result []attribute.KeyValue
 		for _, v := range group {
+			v.Key = attr.Key + "." + v.Key
 			result = append(result, otelAttribute(v)...)
 		}
 		return result
