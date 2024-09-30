@@ -45,6 +45,7 @@ func TestNewOtelHandler(t *testing.T) {
 
 	handler := NewOtelHandler(loggerProvider, &HandlerOptions{
 		Level: slog.LevelInfo,
+		AddBaggage: true,
 	}).
 		WithAttrs([]slog.Attr{slog.String("first", "value1")}).
 		WithGroup("group1").
