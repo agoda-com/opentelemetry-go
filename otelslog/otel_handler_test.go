@@ -3,6 +3,7 @@ package otelslog
 import (
 	"bytes"
 	"context"
+	"go.opentelemetry.io/otel/baggage"
 	"log/slog"
 	"os"
 	"testing"
@@ -44,7 +45,7 @@ func TestNewOtelHandler(t *testing.T) {
 	)
 
 	handler := NewOtelHandler(loggerProvider, &HandlerOptions{
-		Level: slog.LevelInfo,
+		Level:      slog.LevelInfo,
 		AddBaggage: true,
 	}).
 		WithAttrs([]slog.Attr{slog.String("first", "value1")}).
@@ -55,6 +56,10 @@ func TestNewOtelHandler(t *testing.T) {
 	otelLogger := slog.New(handler)
 	slog.SetDefault(otelLogger)
 
+	member, _ := baggage.NewMember("baggage.key", "true")
+	bag, _ := baggage.New(member)
+	ctx = baggage.ContextWithBaggage(ctx, bag)
+
 	doSomething(ctx)
 
 	loggerProvider.Shutdown(ctx)
@@ -62,5 +67,5 @@ func TestNewOtelHandler(t *testing.T) {
 	actual := buf.String()
 
 	assert.Contains(t, actual, "INFO hello slog [scopeInfo: github.com/agoda-com/otelslog:0.0.1] {host.name=")
-	assert.Contains(t, actual, "service.name=otelslog-example, service.version=1.0.0, first=value1, group1.second=value2, group1.group2.myKey=myValue, group1.group2.myGroup.groupKey=groupValue}")
+	assert.Contains(t, actual, "service.name=otelslog-example, service.version=1.0.0, baggage.key=true, first=value1, group1.second=value2, group1.group2.myKey=myValue, group1.group2.myGroup.groupKey=groupValue}")
 }
