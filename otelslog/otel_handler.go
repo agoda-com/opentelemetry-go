@@ -20,6 +20,7 @@ import (
 	"context"
 	otel "github.com/agoda-com/opentelemetry-logs-go/logs"
 	"go.opentelemetry.io/otel/attribute"
+	"go.opentelemetry.io/otel/baggage"
 	"go.opentelemetry.io/otel/sdk/instrumentation"
 	semconv "go.opentelemetry.io/otel/semconv/v1.21.0"
 	"go.opentelemetry.io/otel/trace"
@@ -41,6 +42,7 @@ type OtelHandler struct {
 // A zero HandlerOptions consists entirely of default values.
 type HandlerOptions struct {
 	Level slog.Leveler
+	AddBaggage bool
 }
 
 type otelHandler struct {
@@ -88,9 +90,17 @@ func (o otelHandler) Handle(ctx context.Context, record slog.Record) error {
 
 	var attributes []attribute.KeyValue
 
+	if o.opts.AddBaggage {
+		b := baggage.FromContext(ctx)
+		// Iterate over baggage items and add them to log attributes
+		for _, i := range b.Members() {
+			attributes = append(attributes, attribute.String(i.Key(), i.Value()))
+		}
+	}
 	for _, attr := range o.attrs {
 		attributes = append(attributes, otelAttribute(attr)...)
 	}
+
 
 	record.Attrs(func(attr slog.Attr) bool {
 		attributes = append(attributes, otelAttribute(withGroupPrefix(o.groupPrefix, attr))...)

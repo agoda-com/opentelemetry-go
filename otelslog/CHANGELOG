@@ -8,6 +8,12 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ## [Unreleased]
 
+## [v0.1.2] 2024-09-30
+
+### Added
+
+- `AddBaggage` option to add baggage attributes as log attributes
+
 ## [v0.1.1] 2023-12-24
 
 ### Added
