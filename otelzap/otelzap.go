@@ -29,8 +29,8 @@ func NewOtelCore(loggerProvider otel.LoggerProvider, opts ...Option) zapcore.Cor
 	)
 
 	c := &otlpCore{
-		logger: logger,
-		level:  zapcore.InfoLevel,
+		logger:       logger,
+		levelEnabler: zapcore.InfoLevel,
 	}
 	for _, apply := range opts {
 		apply(c)
@@ -43,8 +43,8 @@ func NewOtelCore(loggerProvider otel.LoggerProvider, opts ...Option) zapcore.Cor
 type Option func(c *otlpCore)
 
 // WithLevel sets the minimum level for the OpenTelemetry Core log to be exported
-func WithLevel(level zapcore.Level) Option {
+func WithLevel(levelEnabler zapcore.LevelEnabler) Option {
 	return Option(func(c *otlpCore) {
-		c.level = level
+		c.levelEnabler = levelEnabler
 	})
 }
