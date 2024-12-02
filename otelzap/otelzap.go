@@ -43,7 +43,14 @@ func NewOtelCore(loggerProvider otel.LoggerProvider, opts ...Option) zapcore.Cor
 type Option func(c *otlpCore)
 
 // WithLevel sets the minimum level for the OpenTelemetry Core log to be exported
-func WithLevel(levelEnabler zapcore.LevelEnabler) Option {
+func WithLevel(level zapcore.Level) Option {
+	return Option(func(c *otlpCore) {
+		c.levelEnabler = level
+	})
+}
+
+// WithLevelEnabler sets the zapcore.LevelEnabler for determining which log levels to export
+func WithLevelEnabler(levelEnabler zapcore.LevelEnabler) Option {
 	return Option(func(c *otlpCore) {
 		c.levelEnabler = levelEnabler
 	})
