@@ -66,6 +66,6 @@ func TestNewOtelHandler(t *testing.T) {
 
 	actual := buf.String()
 
-	assert.Contains(t, actual, "INFO hello slog [scopeInfo: github.com/agoda-com/otelslog:0.0.1] {host.name=")
+	assert.Contains(t, actual, "INFO hello slog [scopeInfo: github.com/agoda-com/otelslog:0.2.0] {host.name=")
 	assert.Contains(t, actual, "service.name=otelslog-example, service.version=1.0.0, baggage.key=true, first=value1, group1.second=value2, group1.group2.myKey=myValue, group1.group2.myGroup.groupKey=groupValue}")
 }
