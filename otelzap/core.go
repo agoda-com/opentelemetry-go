@@ -33,8 +33,8 @@ const (
 type otlpCore struct {
 	logger otel.Logger
 
-	fields []zapcore.Field
-	level  zapcore.Level
+	fields       []zapcore.Field
+	levelEnabler zapcore.LevelEnabler
 }
 
 var instrumentationScope = instrumentation.Scope{
@@ -44,7 +44,7 @@ var instrumentationScope = instrumentation.Scope{
 }
 
 func (c *otlpCore) Enabled(level zapcore.Level) bool {
-	return c.level.Enabled(level)
+	return c.levelEnabler.Enabled(level)
 }
 
 func (c *otlpCore) With(f []zapcore.Field) zapcore.Core {
@@ -52,9 +52,9 @@ func (c *otlpCore) With(f []zapcore.Field) zapcore.Core {
 	fields = append(fields, f...)
 
 	return &otlpCore{
-		logger: c.logger,
-		fields: fields,
-		level:  c.level,
+		logger:       c.logger,
+		fields:       fields,
+		levelEnabler: c.levelEnabler,
 	}
 }
 
