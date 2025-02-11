@@ -4,7 +4,7 @@ go 1.21
 
 require (
 	github.com/agoda-com/opentelemetry-logs-go v0.3.0
-	github.com/stretchr/testify v1.8.4
+	github.com/stretchr/testify v1.10.0
 	go.opentelemetry.io/otel v1.18.0
 	go.opentelemetry.io/otel/sdk v1.18.0
 	go.opentelemetry.io/otel/trace v1.18.0
