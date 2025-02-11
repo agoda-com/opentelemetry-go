@@ -1,0 +1,25 @@
+version: 2
+updates:
+  - package-ecosystem: "gomod"
+    directory: "/otelslog"
+    schedule:
+      interval: "daily"
+    commit-message:
+      prefix: "chore(deps): update"
+    open-pull-requests-limit: 10
+
+  - package-ecosystem: "gomod"
+    directory: "/otelzap"
+    schedule:
+      interval: "daily"
+    commit-message:
+      prefix: "chore(deps): update"
+    open-pull-requests-limit: 10
+
+  - package-ecosystem: "gomod"
+    directory: "/otelzerolog"
+    schedule:
+      interval: "daily"
+    commit-message:
+      prefix: "chore(deps): update"
+    open-pull-requests-limit: 10
