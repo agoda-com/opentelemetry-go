@@ -1,6 +1,6 @@
 module github.com/agoda-com/opentelemetry-go/otelzerolog
 
-go 1.23
+go 1.22.0
 
 require (
 	github.com/agoda-com/opentelemetry-logs-go v0.6.0
