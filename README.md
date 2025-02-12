@@ -5,9 +5,9 @@ Open-telemetry extensions for go language
 
 | Logger                     | Version | Minimal go version |
 |----------------------------|---------|--------------------|
-| [otelslog](otelslog)       | v0.2.0  | 1.21               |
-| [otelzap](otelzap)         | v0.2.4  | 1.21               |
-| [otelzerolog](otelzerolog) | v0.0.1  | 1.21               |
+| [otelslog](otelslog)       | v0.3.0  | 1.22               |
+| [otelzap](otelzap)         | v0.3.0  | 1.22               |
+| [otelzerolog](otelzerolog) | v0.1.0  | 1.22               |
 
 ### Quick start with open-telemetry loggers
 
@@ -25,7 +25,7 @@ import (
 	sdk "github.com/agoda-com/opentelemetry-logs-go/sdk/logs"
 	"github.com/agoda-com/otelslog"
 	"go.opentelemetry.io/otel/sdk/resource"
-	semconv "go.opentelemetry.io/otel/semconv/v1.21.0"
+	semconv "go.opentelemetry.io/otel/semconv/v1.27.0"
 	"log/slog"
 	"os"
 )
